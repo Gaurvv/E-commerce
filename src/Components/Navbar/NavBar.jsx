@@ -119,60 +119,61 @@ function NavBar() {
       {/* Sign In Popup */}
       {showPopup && (
         <>
-          <div
-            className="fixed inset-0 z-[90] bg-black bg-opacity-70"
-            onClick={() => setShowPopup(false)}
-          ></div>
+          {/* Overlay with blur */}
+          <div className="fixed inset-0 z-[90] bg-transparent  backdrop-blur-sm flex justify-center items-center"></div>
 
+          {/* Centered popup */}
           <div
             ref={popupRef}
-            className="fixed inset-y-0 right-0 w-full max-w-sm sm:max-w-md bg-white shadow-2xl p-8 transform transition-transform duration-300 ease-out z-[100] translate-x-0"
+            className="fixed z-[100] inset-0 flex justify-center items-center p-4"
           >
-            <button
-              className="absolute top-4 right-4 text-3xl text-gray-500 hover:text-red-600 transition"
-              onClick={() => setShowPopup(false)}
-            >
-              <IoMdClose />
-            </button>
+            <div className="bg-white w-full max-w-sm sm:max-w-md rounded-2xl shadow-2xl p-8 relative z-[101]">
+              <button
+                className="absolute top-4 right-4 text-3xl text-gray-500 hover:text-red-600 transition"
+                onClick={() => setShowPopup(false)}
+              >
+                <IoMdClose />
+              </button>
 
-            <h2 className="bg-gradient-to-r from-green-500 to-green-600 mt-4 text-white rounded-full h-14 flex items-center justify-center w-full text-2xl font-bold mb-6 shadow-md">
-              SIGN IN
-            </h2>
+              <h2 className="bg-gradient-to-r from-green-500 to-green-600 mt-4 text-white rounded-full h-14 flex items-center justify-center w-full text-2xl font-bold mb-6 shadow-md">
+                SIGN IN
+              </h2>
 
-            <input
-              type="text"
-              placeholder="Enter Username"
-              className="w-full mb-4 px-5 py-3 border border-gray-300 rounded-full outline-none focus:ring-2 focus:ring-orange-400 transition"
-            />
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="w-full mb-6 px-5 py-3 border border-gray-300 rounded-full outline-none focus:ring-2 focus:ring-orange-400 transition"
-            />
+              <input
+                type="text"
+                placeholder="Enter Username"
+                className="w-full mb-4 px-5 py-3 border border-gray-300 rounded-full outline-none focus:ring-2 focus:ring-orange-400 transition"
+              />
+              <input
+                type="password"
+                placeholder="Enter Password"
+                className="w-full mb-6 px-5 py-3 border border-gray-300 rounded-full outline-none focus:ring-2 focus:ring-orange-400 transition"
+              />
 
-            <p className="flex justify-center items-center pb-3 font-semibold text-gray-700">
-              or login with
-            </p>
+              <p className="flex justify-center items-center pb-3 font-semibold text-gray-700">
+                or login with
+              </p>
 
-            <ul className="flex gap-6 pb-6 justify-center items-center text-3xl">
-              <li className="hover:cursor-pointer bg-gradient-to-r from-orange-500 to-orange-400 w-12 h-10 rounded-lg flex justify-center items-center text-white shadow-md hover:scale-110 transition">
-                <FaGoogle />
-              </li>
-              <li className="hover:cursor-pointer bg-gradient-to-r from-orange-500 to-orange-400 w-12 h-10 rounded-lg flex justify-center items-center text-white shadow-md hover:scale-110 transition">
-                <FaGithub />
-              </li>
-            </ul>
+              <ul className="flex gap-6 pb-6 justify-center items-center text-3xl">
+                <li className="hover:cursor-pointer bg-gradient-to-r from-orange-500 to-orange-400 w-12 h-10 rounded-lg flex justify-center items-center text-white shadow-md hover:scale-110 transition">
+                  <FaGoogle />
+                </li>
+                <li className="hover:cursor-pointer bg-gradient-to-r from-orange-500 to-orange-400 w-12 h-10 rounded-lg flex justify-center items-center text-white shadow-md hover:scale-110 transition">
+                  <FaGithub />
+                </li>
+              </ul>
 
-            <button className="uppercase text-white w-full bg-green-600 hover:bg-orange-400 font-bold py-4 rounded-full transition shadow-lg">
-              Login
-            </button>
+              <button className="uppercase text-white w-full bg-green-600 hover:bg-orange-400 font-bold py-4 rounded-full transition shadow-lg">
+                Login
+              </button>
 
-            <p className="pt-4 flex gap-2 justify-center items-center text-gray-700 text-sm">
-              Don't have an account?{" "}
-              <a className="underline text-orange-500 hover:text-orange-600 font-semibold" href="#">
-                Sign Up
-              </a>
-            </p>
+              <p className="pt-4 flex gap-2 justify-center items-center text-gray-700 text-sm">
+                Don't have an account?{" "}
+                <a className="underline text-orange-500 hover:text-orange-600 font-semibold" href="#">
+                  Sign Up
+                </a>
+              </p>
+            </div>
           </div>
         </>
       )}
