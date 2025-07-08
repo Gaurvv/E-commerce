@@ -9,6 +9,7 @@ import Footer from './Components/Footer'
 function App() {
   return (
     <div >
+      <title>experience the best pizza </title>
       <NavBar />
       <Home/>
       <Categories/>
