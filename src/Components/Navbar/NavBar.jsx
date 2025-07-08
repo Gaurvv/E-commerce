@@ -75,7 +75,7 @@ function NavBar() {
                 <li  className= " hoevr:cursor-pointer  bg-orange-500    w-10 h-8 rounded-[5px]  flex justify-center items-center text-white  hover:cursor-pointer  "  ><FaGithub /></li>
               </ul>
 
-            <button className="  uppercase text-white  w-full bg-green-500 hover:bg-orange-500 hover:cursor-pointer  font-bold py-4 rounded-3xl transition">
+            <button className="  uppercase text-white  w-full bg-green-600 hover:bg-orange-500 hover:cursor-pointer  font-bold py-4 rounded-3xl transition">
               Login
             </button>
             <p  className=" pt-3 flex  gap-2 justify-center items-center" >don't have an account <a className="underline"  href="#">SignUp</a>  </p>
