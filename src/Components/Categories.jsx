@@ -1,158 +1,119 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiShoppingCart } from "react-icons/fi";
-import Chef from './Chef'
+import Chef from './Chef';
 
-const pizzas = [
-  {
-    title: "Mushroom Pizza",
-    img: "mushroom.jpg",
-    desc: "Fresh mushrooms, mozzarella & savory sauce on a golden crust.",
-    price: "Rs. 399",
-    type: "veg"
-  },
-  {
-    title: "Spicy Chicken Pizza",
-    img: "diablo.jpg",
-    desc: "Juicy chicken, jalapeños & cheese with a fiery kick!",
-    price: "Rs. 459",
-    type: "non-veg"
-  },
-  {
-    title: "Cheese Lovers",
-    img: "pep.jpeg",
-    desc: "Mozzarella, cheddar & parmesan — a cheese dream!",
-    price: "Rs. 429",
-    type: "non-veg"
-  },
-  {
-    title: "Hawaiian Pizza",
-    img: "mar.jpg",
-    desc: "Pineapple, ham & cheese on a soft crust.",
-    price: "Rs. 449",
-    type: "non-veg"
-  },
-  {
-    title: "Veggie Delight",
-    img: "veg.jpg",
-    desc: "Peppers, onions, olives, tomatoes & mozzarella.",
-    price: "Rs. 389",
-    type: "non-veg"
-  },
-  {
-    title: "Manrash Delight",
-    img: "veg.jpg",
-    desc: "Peppers, onions, olives, tomatoes & mozzarella.",
-    price: "Rs. 389",
-    type: "non-veg"
-  },
-  {
-    title: "Rachit Pizza",
-    img: "veg.jpg",
-    desc: "Peppers, onions, olives, tomatoes & mozzarella.",
-    price: "Rs. 389",
-    type: "veg"
-  },
-  {
-    title: "Rachit Pizza",
-    img: "veg.jpg",
-    desc: "Peppers, onions, olives, tomatoes & mozzarella.",
-    price: "Rs. 389",
-    type: "veg"
-  },
-  {
-    title: "Rachit Pizza",
-    img: "veg.jpg",
-    desc: "Peppers, onions, olives, tomatoes & mozzarella.",
-    price: "Rs. 389",
-    type: "veg"
-  },
-  {
-    title: "Rachit Pizza",
-    img: "veg.jpg",
-    desc: "Peppers, onions, olives, tomatoes & mozzarella.",
-    price: "Rs. 389",
-    type: "veg"
-  }
-];
+const Categories = () => {
+  const [productData, setProductData] = useState([]);
 
-function Categories() {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch("https://dummyjson.com/recipes");
+        const data = await res.json();
+
+        if (res.status === 200) {
+          setProductData(data.recipes);
+        } else {
+          console.error("Failed to fetch recipes.");
+        }
+      } catch (err) {
+        console.error("Error fetching recipes:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Realistic category images
+  const categories = [
+    {
+      name: "Soft Drinks",
+      image: "https://i5.walmartimages.com/seo/Coca-Cola-Sprite-Soft-Drink-12-Oz-Can-24-PK_4b6c5e01-1e94-4abb-a41a-8ba23d2c65ab.0e9fe0c63f0259a5813b9d9686269dfc.jpeg",
+    },
+    {
+      name: "Hard Drinks",
+      image: "https://cheers.com.np/uploads/products/02720948331757621247044276918793046374483267.png",
+    },
+    {
+      name: "Snacks",
+      image: "https://www.allrecipes.com/thmb/Abdqr-LSh-3MFM5VlKOphxA98fQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/87605-original-chex-party-mix-ddmfs-001-4x3-2a4d9811d7fd489da2e87408676eb185.jpg",
+    },
+    {
+      name: "Desserts",
+      image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=500&q=60",
+    },
+    {
+      name: "Fast Food",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxfTyKiKOaifAdMwtibhG3I4czAMK8YQOMJg&s",
+    },
+    {
+      name: "Salads",
+      image: "https://www.tasteofhome.com/wp-content/uploads/2025/02/Favorite-Mediterranean-Salad_EXPS_TOHcom25_41556_MD_P2_02_05_1b.jpg?w=892",
+    },
+    {
+      name: "Pasta",
+      image: "https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2021/10/roasted-tomato-sauce-portion-800x1200.jpg",
+    },
+  ];
+
   return (
     <>
-      {/* Top Section */}
+      {/* Category Heading */}
       <div className="uppercase bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-10 shadow-md">
         Categories
       </div>
 
-      <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-35">
-        {/* Non-Veg */}
-        <div className="flex flex-col items-center">
-          <img src="non-veg.jpg" className="rounded-full w-32 h-32 object-cover shadow-lg" alt="non-veg" />
-          <p className="mt-3 text-lg font-semibold text-orange-800">Non-Veg Pizza</p>
-        </div>
-
-        {/* Veg */}
-        <div className="flex flex-col items-center">
-          <img src="veg.jpg" className="rounded-full w-32 h-32 object-cover shadow-lg" alt="veg" />
-          <p className="mt-3 text-lg font-semibold text-green-500 ">Veg Pizza</p>
-        </div>
+      {/* Real Categories Section */}
+      <div className="mt-10 flex flex-wrap justify-center items-center gap-8 px-4">
+        {categories.map((cat, index) => (
+          <div key={index} className="flex flex-col items-center">
+            <img
+              src={cat.image}
+              alt={cat.name}
+              className="rounded-full w-28 h-28 object-cover shadow-lg"
+            />
+            <p className="mt-3 text-lg font-semibold text-orange-800">{cat.name}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Menu Section */}
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Menu Heading */}
+      <div className="bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
+        Explore Our Menu
+      </div>
 
-        <div className="bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
-          Explore Our Menu
-        </div>
-
-        {/* Veg Section */}
-        <h2 className="text-xl sm:text-2xl font-bold font-serif text-green-700 mt-10 mb-4 text-center">Veg Pizzas</h2>
-        <div className="flex flex-wrap justify-center gap-6">
-          {pizzas.filter(p => p.type === "veg").map((pizza, index) => (
+      {/* Render Recipes */}
+      <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
+        {productData.length === 0 ? (
+          <p className="text-center text-lg text-gray-500">Loading recipes...</p>
+        ) : (
+          productData.map((item) => (
             <div
-              key={index}
+              key={item.id}
               className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01]"
-              style={{ minWidth: '160px' }}
+              style={{ minWidth: '160px', height: '420px' }}
             >
-              <img src={pizza.img} alt={pizza.title} className="w-full h-44 object-cover" />
-              <div className="p-4">
-                <h2 className="text-white text-lg font-semibold mb-1 font-serif">{pizza.title}</h2>
-                <p className="text-white text-sm font-serif mb-2">{pizza.desc}</p>
-                <p className="text-white font-bold text-base font-serif">{pizza.price}</p>
-                <button className="mt-2 bg-green-500 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110">
+              <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
+              <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
+                <div>
+                  <h2 className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
+                  <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
+                  <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
+                </div>
+                <button className="mt-4 bg-green-500 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110">
                   <FiShoppingCart className="text-base" />
-                  Cart
+                  Add to Cart
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Non-Veg Section */}
-        <h2 className="text-xl sm:text-2xl font-bold font-serif text-orange-700 mt-14 mb-4 text-center">Non-Veg Pizzas</h2>
-        <div className="flex flex-wrap justify-center gap-6">
-          {pizzas.filter(p => p.type === "non-veg").map((pizza, index) => (
-            <div
-              key={index}
-              className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01]"
-              style={{ minWidth: '160px' }}
-            >
-              <img src={pizza.img} alt={pizza.title} className="w-full h-44 object-cover" />
-              <div className="p-4">
-                <h2 className="text-white text-lg font-semibold mb-1 font-serif">{pizza.title}</h2>
-                <p className="text-white text-sm font-serif mb-2">{pizza.desc}</p>
-                <p className="text-white font-bold text-base font-serif">{pizza.price}</p>
-                <button className="mt-2 bg-orange-800 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110">
-                  <FiShoppingCart className="text-base" />
-                  Cart
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
-      <Chef/>
+
+      {/* Other Components */}
+      <Chef />
     </>
   );
-}
+};
 
 export default Categories;

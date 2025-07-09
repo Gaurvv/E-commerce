@@ -42,7 +42,7 @@ function NavBar() {
             />
           </div>
           <span className="text-3xl font-bold text-white tracking-wide cursor-pointer font-serif">
-            PIZZA
+            FOOD
           </span>
         </div>
 

@@ -12,11 +12,11 @@ function Home() {
 
       <div className="absolute inset-0 flex flex-col items-start justify-center px-6 md:px-16 space-y-5">
         <h1 className="font-serif text-4xl md:text-6xl text-white uppercase drop-shadow-lg">
-          Pokhara's Best Pizza
+          Pokhara's Best food
         </h1>
 
         <p className="font-serif text-white text-base md:text-lg max-w-xl drop-shadow-md">
-          Welcome to Slice of Heaven, where every bite tells a story of tradition, flavor, and love for authentic pizza. We bring you handcrafted pizzas made with the freshest ingredients, homemade sauces, and dough.
+         Welcome to Flavor Junction — where every bite hits different! Fresh, tasty dishes from all around the world, made with love and the best ingredients. Come eat, chill, repeat!
         </p>
 
         <button className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-serif font-semibold transition shadow-lg">
