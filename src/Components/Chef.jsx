@@ -6,7 +6,7 @@ function Chef() {
       id: 1,
       img: "jhallu.jpg",
       title: "Rachit Tiwari",
-      desc: "Non-veg pizza specialist",
+      desc: "Non-veg specialist",
     },
     {
       id: 2,
@@ -18,7 +18,7 @@ function Chef() {
       id: 3,
       img: "dona.jpg",
       title: "Sushant Tiwari",
-      desc: "Veg pizza specialist",
+      desc: "Veg  specialist",
     },
   ];
 
