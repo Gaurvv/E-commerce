@@ -11,7 +11,7 @@ function Chef() {
     {
       id: 2,
       img: "manrash.jpg",
-      title: "Kavreli Samdhi",
+      title: "Prashant Sunar",
       desc: "All-rounder",
     },
     {
