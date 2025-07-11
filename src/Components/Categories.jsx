@@ -7,6 +7,12 @@ const Categories = () => {
   const [productData, setProductData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  
+
+
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +32,16 @@ const Categories = () => {
     fetchData();
   }, []);
 
+  const handleAddToCart = (item) => {
+    const exists = cartItems.find(product => product.id === item.id);
+    if (!exists) {
+      setCartItems(prevCartItems => [...prevCartItems, item]);
+      console.log("Item added:", item.name);
+    } else {
+      console.log("Already in cart:", item.name);
+    }
+  };
+
   const categories = [
     { name: "Soft Drinks", image: "https://i5.walmartimages.com/seo/Coca-Cola-Sprite-Soft-Drink-12-Oz-Can-24-PK_4b6c5e01-1e94-4abb-a41a-8ba23d2c65ab.0e9fe0c63f0259a5813b9d9686269dfc.jpeg" },
     { name: "Hard Drinks", image: "https://cheers.com.np/uploads/products/02720948331757621247044276918793046374483267.png" },
@@ -43,6 +59,11 @@ const Categories = () => {
         Categories
       </div>
 
+      {/* Cart Count */}
+      <div className="text-center mt-4 text-orange-600 font-bold text-lg">
+        🛒 Cart: {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
+      </div>
+
       {/* Category List */}
       <div className="mt-10 flex flex-wrap justify-center items-center gap-8 px-4">
         {categories.map((cat, index) => (
@@ -57,52 +78,66 @@ const Categories = () => {
         ))}
       </div>
 
-      {/* Menu Heading */}
+     
       <div className="bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
         Explore Our Menu
       </div>
 
-      {/* Product Cards */}
+      
       <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
         {productData.length === 0 ? (
           <p className="text-center text-lg text-gray-500">Loading recipes...</p>
         ) : (
-          productData.map((item) => (
-            <div
-              key={item.id}
+          productData.map((item) => {
+            const isInCart = cartItems.some(cartItem => cartItem.id === item.id);
+            return (
+              <div
+                key={item.id}
+                onClick={() => {
+                  setSelectedProduct(item);
+                  setShowModal(true);
+                }}
+                className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
+                style={{ minWidth: '160px', height: '420px' }}
+              >
+                <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
+                <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
+                  <div>
+                    <h2 className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
+                    <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
+                    <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
+                  </div>
 
-              onClick={() => {
-                
-                setSelectedProduct(item);
-                setShowModal(true);
-              }}
-              className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
-              style={{ minWidth: '160px', height: '420px' }}
-            >
-              <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
-              <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
-                <div>
-                  <h2    className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
-                  <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
-                  <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(item);
+                    }}
+                    className={`mt-4 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110
+                      ${isInCart ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500'}`}
+                    disabled={isInCart} 
+                  >
+                    <FiShoppingCart 
+                      cartItem = {  cartItems  }
+                      onClick={()=> { setCartItems(true), addItemToCart();  } }
+                    
+                     className="text-base" />
+                    {isInCart ? 'Added to Cart' : 'Add to Cart'}
+                  </button>
                 </div>
-                <button className="mt-4 bg-green-500 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110">
-                  <FiShoppingCart className="text-base" />
-                  Add to Cart
-                </button>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
-      {/* Other Components */}
       <Chef />
 
-      {/* Modal */}
-      {showModal && selectedProduct &&  (
-        <ProductModal 
-
+      {showModal && selectedProduct && (
+        <ProductModal
+        addItemToCart={addItemToCart}
+           cartItems = { cartItems  }
+           setCartItems = {  setCartItems  }
           item={selectedProduct}
           onClose={() => {
             setShowModal(false);

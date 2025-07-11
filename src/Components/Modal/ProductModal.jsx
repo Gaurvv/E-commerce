@@ -1,6 +1,6 @@
 import React from "react";
 
-function ProductModal({ item, onClose }) {
+function ProductModal({ item, onClose, cartItems, setCartItems, addItemToCart }) {
   if (!item) return null;
 
   return (
@@ -22,7 +22,7 @@ function ProductModal({ item, onClose }) {
           <p className="text-white text-base">{item.instructions}</p>
           <p className="text-white text-lg"> Cuisine: <span className="font-semibold">{item.cuisine}</span></p>
 
-          {/* Close Button */}
+          
           <button
             onClick={onClose}
             className="mt-auto bg-white text-orange-500 font-semibold px-4 py-2 rounded-lg hover:bg-gray-200 transition duration-300"
