@@ -2,17 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { FiShoppingCart } from "react-icons/fi";
 import Chef from './Chef';
 import ProductModal from './Modal/ProductModal';
+import addToCart from './Local Storage/AddToCart';
 
 const Categories = () => {
   const [productData, setProductData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
-  
-
-
-
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +24,6 @@ const Categories = () => {
         console.error("Error fetching recipes:", err);
       }
     };
-
     fetchData();
   }, []);
 
@@ -37,8 +32,13 @@ const Categories = () => {
     if (!exists) {
       setCartItems(prevCartItems => [...prevCartItems, item]);
       console.log("Item added:", item.name);
+       addToCart(item)
+       
     } else {
+     
       console.log("Already in cart:", item.name);
+      
+      
     }
   };
 
@@ -78,12 +78,12 @@ const Categories = () => {
         ))}
       </div>
 
-     
+      {/* Menu heading */}
       <div className="bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
         Explore Our Menu
       </div>
 
-      
+      {/* Product cards */}
       <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
         {productData.length === 0 ? (
           <p className="text-center text-lg text-gray-500">Loading recipes...</p>
@@ -115,13 +115,9 @@ const Categories = () => {
                     }}
                     className={`mt-4 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110
                       ${isInCart ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500'}`}
-                    disabled={isInCart} 
+                    disabled={isInCart}
                   >
-                    <FiShoppingCart 
-                      cartItem = {  cartItems  }
-                      onClick={()=> { setCartItems(true), addItemToCart();  } }
-                    
-                     className="text-base" />
+                    <   FiShoppingCart className="text-base" />
                     {isInCart ? 'Added to Cart' : 'Add to Cart'}
                   </button>
                 </div>
@@ -135,9 +131,9 @@ const Categories = () => {
 
       {showModal && selectedProduct && (
         <ProductModal
-        addItemToCart={addItemToCart}
-           cartItems = { cartItems  }
-           setCartItems = {  setCartItems  }
+          addItemToCart={handleAddToCart}
+          cartItems={cartItems}
+          setCartItems={setCartItems}
           item={selectedProduct}
           onClose={() => {
             setShowModal(false);
