@@ -3,14 +3,15 @@ import NavBar from '../Components/Navbar/NavBar';
 import CartCard from './CartCard';
 
 function Cart() {
-  const [local, setLocal] = useState([]);
+  const data = localStorage.getItem('cart')
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      setLocal(JSON.parse(storedCart));
-    }
-  }, []); // 
+  const [local, setLocal] = useState(JSON.parse(data));
+  
+  
+   
+
+
+
 
   return (
     <div>
@@ -18,7 +19,7 @@ function Cart() {
 
       {local.length > 0 ? (
         local.map((item, index) => (
-          <CartCard item={item} key={index} />
+          <CartCard item={item} setItem={setLocal} key={index} />
         ))
       ) : (
         <div className="text-center text-gray-500 mt-10 text-xl">🛒 Your cart is empty</div>

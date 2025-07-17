@@ -29,16 +29,18 @@ const Categories = () => {
 
   const handleAddToCart = (item) => {
     const exists = cartItems.find(product => product.id === item.id);
-    if (!exists) {
-      setCartItems(prevCartItems => [...prevCartItems, item]);
-      console.log("Item added:", item.name);
-       addToCart(item)
-       
+    if (exists) {
+      setCartItems(prevCartItems =>
+        prevCartItems.map(product =>
+          product.id === item.id
+            ? { ...product, quantity: product.quantity + 1 }
+            : product
+        )
+      );
+      addToCart({ ...item, quantity: exists.quantity + 1 });
     } else {
-     
-      console.log("Already in cart:", item.name);
-      
-      
+      setCartItems(prevCartItems => [...prevCartItems, { ...item, quantity: 1 }]);
+      addToCart({ ...item, quantity: 1 });
     }
   };
 
@@ -61,7 +63,7 @@ const Categories = () => {
 
       {/* Cart Count */}
       <div className="text-center mt-4 text-orange-600 font-bold text-lg">
-        🛒 Cart: {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
+        🛒 Cart: {cartItems.reduce((acc, item) => acc + item.quantity, 0)} item{cartItems.reduce((acc, item) => acc + item.quantity, 0) !== 1 ? 's' : ''}
       </div>
 
       {/* Category List */}
@@ -86,44 +88,39 @@ const Categories = () => {
       {/* Product cards */}
       <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
         {productData.length === 0 ? (
-          <p className="text-center text-lg text-gray-500">Loading recipes...</p>
+          <p className="text-center text-lg text-gray-500">Load hudai xa pakh.....</p>
         ) : (
-          productData.map((item) => {
-            const isInCart = cartItems.some(cartItem => cartItem.id === item.id);
-            return (
-              <div
-                key={item.id}
-                onClick={() => {
-                  setSelectedProduct(item);
-                  setShowModal(true);
-                }}
-                className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
-                style={{ minWidth: '160px', height: '420px' }}
-              >
-                <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
-                <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
-                  <div>
-                    <h2 className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
-                    <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
-                    <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
-                  </div>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(item);
-                    }}
-                    className={`mt-4 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110
-                      ${isInCart ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500'}`}
-                    disabled={isInCart}
-                  >
-                    <   FiShoppingCart className="text-base" />
-                    {isInCart ? 'Added to Cart' : 'Add to Cart'}
-                  </button>
+          productData.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => {
+                setSelectedProduct(item);
+                setShowModal(true);
+              }}
+              className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
+              style={{ minWidth: '160px', height: '420px' }}
+            >
+              <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
+              <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
+                <div>
+                  <h2 className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
+                  <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
+                  <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
                 </div>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(item);
+                  }}
+                  className="mt-4 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110 bg-green-500"
+                >
+                  <FiShoppingCart className="text-base" />
+                  Add to Cart
+                </button>
               </div>
-            );
-          })
+            </div>
+          ))
         )}
       </div>
 
