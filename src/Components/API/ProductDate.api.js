@@ -1,12 +1,13 @@
-const ProductDataApi=async(setProductData) =>{
-    const request = await fetch("https://dummyjson.com/recipes");
-    const response =  await request.json();
+    const ProductDataApi=async(setProductData) =>{
+        const request = await fetch("https://dummyjson.com/recipes");
+        const response =  await request.json();
 
 
-    if(request.status == 200){
-        setProductData(response.recipes);
-    }
+        if(request.status == 200){
+            setProductData(response.recipes);
+            setProductData(response.recipe);
+        }
 
-   
-};
-export default ProductDataApi;
+                    
+    };
+    export default ProductDataApi;

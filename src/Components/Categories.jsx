@@ -9,6 +9,7 @@ const Categories = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,53 +45,79 @@ const Categories = () => {
     }
   };
 
-  const categories = [
-    { name: "Soft Drinks", image: "https://i5.walmartimages.com/seo/Coca-Cola-Sprite-Soft-Drink-12-Oz-Can-24-PK_4b6c5e01-1e94-4abb-a41a-8ba23d2c65ab.0e9fe0c63f0259a5813b9d9686269dfc.jpeg" },
-    { name: "Hard Drinks", image: "https://cheers.com.np/uploads/products/02720948331757621247044276918793046374483267.png" },
-    { name: "Snacks", image: "https://www.allrecipes.com/thmb/Abdqr-LSh-3MFM5VlKOphxA98fQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/87605-original-chex-party-mix-ddmfs-001-4x3-2a4d9811d7fd489da2e87408676eb185.jpg" },
-    { name: "Desserts", image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=500&q=60" },
-    { name: "Fast Food", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxfTyKiKOaifAdMwtibhG3I4czAMK8YQOMJg&s" },
-    { name: "Salads", image: "https://www.tasteofhome.com/wp-content/uploads/2025/02/Favorite-Mediterranean-Salad_EXPS_TOHcom25_41556_MD_P2_02_05_1b.jpg?w=892" },
-    { name: "Pasta", image: "https://cdn77-s3.lazycatkitchen.com/wp-content/uploads/2021/10/roasted-tomato-sauce-portion-800x1200.jpg" },
-  ];
+  const mealTypeSet = new Set();
+
+  productData.forEach(item => {
+    if (Array.isArray(item.mealType)) {
+      item.mealType.forEach(type => mealTypeSet.add(type));
+    } else if (item.mealType) {
+      mealTypeSet.add(item.mealType);
+    }
+  });
+
+  const dynamicCategories = ["All", ...Array.from(mealTypeSet)];
+
+  const categoryImages = {
+  All: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80",
+  Lunch: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=80",
+  Dinner: "https://images.unsplash.com/photo-1543352634-3f209f7ae7a7?auto=format&fit=crop&w=500&q=80",
+  Snack: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
+  Dessert: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
+  Breakfast: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80",
+};
+
+
+  const filteredProducts =
+    selectedCategory === "All"
+      ? productData
+      : productData.filter(item =>
+          Array.isArray(item.mealType)
+            ? item.mealType.includes(selectedCategory)
+            : item.mealType === selectedCategory
+        );
 
   return (
     <>
-      {/* Category Heading */}
       <div className="uppercase bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-10 shadow-md">
         Categories
       </div>
 
-      {/* Cart Count */}
       <div className="text-center mt-4 text-orange-600 font-bold text-lg">
         🛒 Cart: {cartItems.reduce((acc, item) => acc + item.quantity, 0)} item{cartItems.reduce((acc, item) => acc + item.quantity, 0) !== 1 ? 's' : ''}
       </div>
 
-      {/* Category List */}
-      <div className="mt-10 flex flex-wrap justify-center items-center gap-8 px-4">
-        {categories.map((cat, index) => (
-          <div key={index} className="flex flex-col items-center">
-            <img
-              src={cat.image}
-              alt={cat.name}
-              className="rounded-full w-28 h-28 object-cover shadow-lg"
-            />
-            <p className="mt-3 text-lg font-semibold text-orange-800">{cat.name}</p>
+      <div className="mt-10 flex flex-wrap justify-center items-center gap-6 px-4">
+        {dynamicCategories.map((cat, index) => (
+          <div
+            key={index}
+            className="flex flex-col items-center cursor-pointer"
+            onClick={() => setSelectedCategory(cat)}
+          >
+            <div
+              className={`rounded-full w-28 h-28 bg-orange-200 flex items-center justify-center shadow-lg border-4 transition-all duration-300 overflow-hidden ${
+                selectedCategory === cat ? 'border-green-500 scale-105' : 'border-transparent'
+              }`}
+            >
+              <img
+                src={categoryImages[cat] || categoryImages["All"]}
+                alt={cat}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <p className="mt-3 text-lg font-semibold text-orange-800">{cat}</p>
           </div>
         ))}
       </div>
 
-      {/* Menu heading */}
       <div className="bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
         Explore Our Menu
       </div>
 
-      {/* Product cards */}
       <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
-        {productData.length === 0 ? (
-          <p className="text-center text-lg text-gray-500">Load hudai xa pakh.....</p>
+        {filteredProducts.length === 0 ? (
+          <p className="text-center text-lg text-gray-500"></p>
         ) : (
-          productData.map((item) => (
+          filteredProducts.map((item) => (
             <div
               key={item.id}
               onClick={() => {
@@ -98,7 +125,7 @@ const Categories = () => {
                 setShowModal(true);
               }}
               className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
-              style={{ minWidth: '160px', height: '420px' }}
+              style={{ minWidth: '160px', height: '440px' }}
             >
               <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
               <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
@@ -106,6 +133,7 @@ const Categories = () => {
                   <h2 className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
                   <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
                   <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
+                  <p className="text-white font-medium text-sm font-serif mt-1">🍽️ {Array.isArray(item.mealType) ? item.mealType.join(', ') : item.mealType}</p>
                 </div>
 
                 <button
