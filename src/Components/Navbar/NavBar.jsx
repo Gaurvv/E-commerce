@@ -3,10 +3,16 @@ import { IoMdMenu, IoMdClose } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import { NavLink } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa";
 
 function NavBar() {
   const [showRes, setShowRes] = useState(false);
   const menuRef = useRef(null);
+  const handleLogout = () =>{
+    localStorage.removeItem("token");
+    alert("Logout succesfully");
+    Navigate("/auth")
+  }
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -53,6 +59,9 @@ function NavBar() {
 
           <NavLink to="/Cart">
             <MdOutlineShoppingCart className="text-3xl text-white hover:scale-110 transition cursor-pointer w-8 h-8" />
+          </NavLink>
+           <NavLink to="/settings">
+          <FaSignOutAlt className="text-3xl text-white hover:scale-110 transition cursor-pointer w-8 h-8" onClick={handleLogout}  />
           </NavLink>
         </div>
 

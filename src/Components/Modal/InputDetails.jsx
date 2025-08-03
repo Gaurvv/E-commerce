@@ -1,25 +1,30 @@
 import React from 'react';
 
-
-const InputDetails = ({ err,errormessage, placeholder, ref, title, ...props }) => {
-  return (
-    <div {...props} className="  flex justify-center px-4 md:px-8">
-      <div className=" rounded-2xl  flex flex-col w-full max-w-sm md:max-w-md">
-        <p className="text-sm sm:text-base">{title}</p>
-        <input
-          ref={ref}
-          className="  rounded-2xl  border h-7 p-2 mt-2 text-sm sm:text-base"
-          type="text"
-          placeholder={placeholder}
-        />
-        <div className="text-red-500 text-xs sm:text-sm mt-1">
-          {err && 
-          <span>{errormessage}</span>
-          }
+const InputDetails = React.forwardRef(
+  ({ err, errormessage, placeholder, title, ...props }, ref) => {
+    return (
+      <div className="flex justify-center px-4 md:px-8" {...props}>
+        <div className="flex flex-col w-full max-w-sm md:max-w-md">
+          {title && (
+            <label className="text-sm sm:text-base mb-1">{title}</label>
+          )}
+          <input
+            ref={ref}
+            type="text"
+            placeholder={placeholder}
+            className={`rounded-2xl border h-7 p-2 text-sm sm:text-base ${
+              err ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {err && (
+            <p className="text-red-500 text-xs sm:text-sm mt-1">
+              {errormessage || "Please add valid details"}
+            </p>
+          )}
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default InputDetails;
