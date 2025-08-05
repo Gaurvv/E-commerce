@@ -18,10 +18,10 @@ function ProductModal({ item, onClose }) {
 
         {/* Content */}
         <div className="w-full sm:w-1/2 p-6 flex flex-col gap-4 overflow-y-auto">
-          <h1 className="text-white text-3xl font-bold">{item.name}</h1>
-          <p className="text-white text-base">{item.instructions}</p>
+          <h1 className="text-white text-3xl font-bold">{item.pName}</h1>
+          <p className="text-white text-base">{item.description}</p>
           <p className="text-white text-lg">
-            Cuisine: <span className="font-semibold">{item.cuisine}</span>
+            catrfory: <span className="font-semibold">{item.category}</span>
           </p>
 
           <button

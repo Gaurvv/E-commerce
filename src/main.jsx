@@ -8,6 +8,7 @@ import Setting from "./Setting/Setting.jsx";
 import Hoome from "./Hoome.jsx";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AddProduct from "./Components/AddProduct.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "settings",
         element: <Setting />,
+      },
+      {
+        path: "AddProd",
+        element: <AddProduct />,
       },
     ],
   },

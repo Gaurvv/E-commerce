@@ -9,7 +9,6 @@ function NavBar() {
   const [showRes, setShowRes] = useState(false);
   const menuRef = useRef(null);
   const handleLogout = () =>{
-    localStorage.removeItem("token");
     alert("Logout succesfully");
     Navigate("/auth")
   }

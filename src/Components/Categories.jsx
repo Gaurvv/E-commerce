@@ -10,21 +10,41 @@ const Categories = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("https://dummyjson.com/recipes");
+        setLoading(true);
+        setError(null);
+        
+        const res = await fetch("http://localhost:3000/product");
         const data = await res.json();
+        
+        console.log("API Response:", data); // Debug log
+        
         if (res.status === 200) {
-          setProductData(data.recipes);
+          // Add id field for compatibility (MongoDB uses _id)
+          const productsWithId = data.data.map(product => ({
+            ...product,
+            id: product._id || product.id
+          }));
+          
+          setProductData(productsWithId);
+          console.log("Products set:", productsWithId); // Debug log
         } else {
-          console.error("Failed to fetch recipes.");
+          console.error("Failed to fetch products:", data.message);
+          setError("Failed to fetch products");
         }
       } catch (err) {
-        console.error("Error fetching recipes:", err);
+        console.error("Error fetching products:", err);
+        setError("Error fetching products");
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchData();
   }, []);
 
@@ -58,14 +78,13 @@ const Categories = () => {
   const dynamicCategories = ["All", ...Array.from(mealTypeSet)];
 
   const categoryImages = {
-  All: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80",
-  Lunch: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=80",
-  Dinner: "https://images.unsplash.com/photo-1543352634-3f209f7ae7a7?auto=format&fit=crop&w=500&q=80",
-  Snack: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
-  Dessert: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
-  Breakfast: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80",
-};
-
+    All: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80",
+    Lunch: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=80",
+    Dinner: "https://images.unsplash.com/photo-1543352634-3f209f7ae7a7?auto=format&fit=crop&w=500&q=80",
+    Snack: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
+    Dessert: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
+    Breakfast: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80",
+  };
 
   const filteredProducts =
     selectedCategory === "All"
@@ -75,6 +94,24 @@ const Categories = () => {
             ? item.mealType.includes(selectedCategory)
             : item.mealType === selectedCategory
         );
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl text-orange-600">Loading products...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl text-red-600">Error: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -115,7 +152,9 @@ const Categories = () => {
 
       <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
         {filteredProducts.length === 0 ? (
-          <p className="text-center text-lg text-gray-500"></p>
+          <p className="text-center text-lg text-gray-500">
+            {productData.length === 0 ? "No products available" : "No products found in this category"}
+          </p>
         ) : (
           filteredProducts.map((item) => (
             <div
@@ -127,13 +166,25 @@ const Categories = () => {
               className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
               style={{ minWidth: '160px', height: '440px' }}
             >
-              <img src={item.image} alt={item.name} className="w-full h-44 object-cover" />
+              <img 
+                src={item.image || 'https://via.placeholder.com/300x200?text=No+Image'} 
+                alt={item.name || item.pName} 
+                className="w-full h-44 object-cover" 
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                }}
+              />
               <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
                 <div>
-                  <h2 className="text-white text-lg font-semibold mb-1 font-serif">{item.name}</h2>
-                  <p className="text-white text-sm font-serif mb-2 line-clamp-2">{item.instructions}</p>
-                  <p className="text-white font-bold text-base font-serif">🍕 {item.cuisine}</p>
-                  <p className="text-white font-medium text-sm font-serif mt-1">🍽️ {Array.isArray(item.mealType) ? item.mealType.join(', ') : item.mealType}</p>
+                  <h2 className="text-white text-lg font-semibold mb-1 font-serif">
+                    {item.pName || item.name || 'Unnamed Product'}
+                  </h2>
+                  <p className="text-white text-sm font-serif mb-2 line-clamp-2">
+                    {item.description || 'No description available'}
+                  </p>
+                  <p className="text-white font-bold text-base font-serif">
+                    category: {item.category || 'Uncategorized'}
+                  </p>
                 </div>
 
                 <button
