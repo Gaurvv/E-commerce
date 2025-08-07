@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import totalAmount from "./CustomFunction/TotalAmount";
 import UserDetails from "./Modal/UserDetails";
+import OrangeButton from "./OrangeButton";
+import generateCartItem from '../Components/CustomFunction/generateCarItem'
+import { useNavigate } from "react-router";
+import addOrderApi from "./order/addOrderApi";
 
 const tdClass = "border border-gray-300 p-2 text-center";
 const tdClassLeft = "border border-gray-300 p-2 text-left";
 
 const CheckOutModal = ({ visible, setVisible }) => {
+  const navigate = useNavigate()
   const [cartData, setCartData] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -19,6 +24,15 @@ const CheckOutModal = ({ visible, setVisible }) => {
   }, [visible]);
 
   if (!visible) return null;
+
+  const handleOrder = () => { 
+    const tempData = {
+      totalAmount: totalAmount(cartData),
+      items: generateCartItem(cartData),
+    };
+    addOrderApi (tempData, navigate)
+  };
+  
 
   return (
     <>
@@ -42,13 +56,13 @@ const CheckOutModal = ({ visible, setVisible }) => {
               </tr>
             </thead>
             <tbody>
-              {cartData.map(({ name, quantity, caloriesPerServing }, index) => {
-                const total = Number(quantity) * Number(caloriesPerServing);
+              {cartData.map(({ productName, quantity, price }, index) => {
+                const total = Number(quantity) * Number(price);
                 return (
                   <tr key={index}>
-                    <td className={tdClassLeft}>{name}</td>
+                    <td className={tdClassLeft}>{productName}</td>
                     <td className={tdClass}>{quantity}</td>
-                    <td className={tdClass}>{caloriesPerServing}</td>
+                    <td className={tdClass}>{price}</td>
                     <td className={tdClass}>{total}</td>
                   </tr>
                 );
@@ -57,9 +71,10 @@ const CheckOutModal = ({ visible, setVisible }) => {
           </table>
 
           <div className="text-right font-semibold text-black border-t pt-2 mb-6">
-            Total: {totalAmount(cartData)} cal
+            Total: <span className="text-green-500">$</span>
+            {totalAmount(cartData)}
           </div>
-          <UserDetails />
+          <OrangeButton title={"Proceed checkout"} onClick={()=> handleOrder()}  />
         </div>
       </div>
     </>

@@ -1,5 +1,7 @@
+import mainEndPoint from "./Auth/mainEndPoint";
+
     const ProductDataApi=async(setProductData) =>{
-        const request = await fetch("http://localhost:3000/product");
+        const request = await fetch( mainEndPoint +"/product");
         const response =  await request.json();
         console.log("respnse of data", response)
 

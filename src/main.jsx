@@ -9,6 +9,7 @@ import Hoome from "./Hoome.jsx";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddProduct from "./Components/AddProduct.jsx";
+import DashboardMain from "./Components/Dashboard/DashboardMain.jsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
         path: "AddProd",
         element: <AddProduct />,
       },
+      {
+        path:"dashboard",
+        element:<DashboardMain/>
+      }
     ],
   },
 ]);

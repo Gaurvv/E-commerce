@@ -1,9 +1,10 @@
 import SecureFetch from "./ApiConfiguration";
+import mainEndPoint from "./mainEndPoint";
 
 const signupApi = async (userDetail, navigate, setUserDetail, setStage, setErrorMessage) => {
   try {
     const request = await SecureFetch(
-      "http://localhost:3000/user/signup",
+      mainEndPoint + "/user/signup",
       "POST",
       {
         "Content-Type": "application/json",

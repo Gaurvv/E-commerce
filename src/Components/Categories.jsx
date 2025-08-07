@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import Chef from './Chef';
-import ProductModal from './Modal/ProductModal';
-import addToCart from './Local Storage/AddToCart';
+import Chef from "./Chef";
+import ProductModal from "./Modal/ProductModal";
+import addToCart from "./Local Storage/AddToCart";
 
 const Categories = () => {
   const [productData, setProductData] = useState([]);
@@ -18,19 +18,19 @@ const Categories = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const res = await fetch("http://localhost:3000/product");
         const data = await res.json();
-        
+
         console.log("API Response:", data); // Debug log
-        
+
         if (res.status === 200) {
           // Add id field for compatibility (MongoDB uses _id)
-          const productsWithId = data.data.map(product => ({
+          const productsWithId = data.data.map((product) => ({
             ...product,
-            id: product._id || product.id
+            id: product._id || product.id,
           }));
-          
+
           setProductData(productsWithId);
           console.log("Products set:", productsWithId); // Debug log
         } else {
@@ -44,32 +44,35 @@ const Categories = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
   const handleAddToCart = (item) => {
-    const exists = cartItems.find(product => product.id === item.id);
+    const exists = cartItems.find((product) => product.id === item._id);
     if (exists) {
-      setCartItems(prevCartItems =>
-        prevCartItems.map(product =>
-          product.id === item.id
+      setCartItems((prevCartItems) =>
+        prevCartItems.map((product) =>
+          product.id === item._id
             ? { ...product, quantity: product.quantity + 1 }
             : product
         )
       );
       addToCart({ ...item, quantity: exists.quantity + 1 });
     } else {
-      setCartItems(prevCartItems => [...prevCartItems, { ...item, quantity: 1 }]);
+      setCartItems((prevCartItems) => [
+        ...prevCartItems,
+        { ...item, quantity: 1 },
+      ]);
       addToCart({ ...item, quantity: 1 });
     }
   };
 
   const mealTypeSet = new Set();
 
-  productData.forEach(item => {
+  productData.forEach((item) => {
     if (Array.isArray(item.mealType)) {
-      item.mealType.forEach(type => mealTypeSet.add(type));
+      item.mealType.forEach((type) => mealTypeSet.add(type));
     } else if (item.mealType) {
       mealTypeSet.add(item.mealType);
     }
@@ -79,17 +82,22 @@ const Categories = () => {
 
   const categoryImages = {
     All: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80",
-    Lunch: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=80",
-    Dinner: "https://images.unsplash.com/photo-1543352634-3f209f7ae7a7?auto=format&fit=crop&w=500&q=80",
-    Snack: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
-    Dessert: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
-    Breakfast: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80",
+    Lunch:
+      "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=500&q=80",
+    Dinner:
+      "https://images.unsplash.com/photo-1543352634-3f209f7ae7a7?auto=format&fit=crop&w=500&q=80",
+    Snack:
+      "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=500&q=80",
+    Dessert:
+      "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=500&q=80",
+    Breakfast:
+      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80",
   };
 
   const filteredProducts =
     selectedCategory === "All"
       ? productData
-      : productData.filter(item =>
+      : productData.filter((item) =>
           Array.isArray(item.mealType)
             ? item.mealType.includes(selectedCategory)
             : item.mealType === selectedCategory
@@ -120,7 +128,10 @@ const Categories = () => {
       </div>
 
       <div className="text-center mt-4 text-orange-600 font-bold text-lg">
-        🛒 Cart: {cartItems.reduce((acc, item) => acc + item.quantity, 0)} item{cartItems.reduce((acc, item) => acc + item.quantity, 0) !== 1 ? 's' : ''}
+        🛒 Cart: {cartItems.reduce((acc, item) => acc + item.quantity, 0)} item
+        {cartItems.reduce((acc, item) => acc + item.quantity, 0) !== 1
+          ? "s"
+          : ""}
       </div>
 
       <div className="mt-10 flex flex-wrap justify-center items-center gap-6 px-4">
@@ -132,7 +143,9 @@ const Categories = () => {
           >
             <div
               className={`rounded-full w-28 h-28 bg-orange-200 flex items-center justify-center shadow-lg border-4 transition-all duration-300 overflow-hidden ${
-                selectedCategory === cat ? 'border-green-500 scale-105' : 'border-transparent'
+                selectedCategory === cat
+                  ? "border-green-500 scale-105"
+                  : "border-transparent"
               }`}
             >
               <img
@@ -153,7 +166,9 @@ const Categories = () => {
       <div className="flex flex-wrap justify-center gap-6 mt-10 px-4 sm:px-6 lg:px-8">
         {filteredProducts.length === 0 ? (
           <p className="text-center text-lg text-gray-500">
-            {productData.length === 0 ? "No products available" : "No products found in this category"}
+            {productData.length === 0
+              ? "No products available"
+              : "No products found in this category"}
           </p>
         ) : (
           filteredProducts.map((item) => (
@@ -164,27 +179,56 @@ const Categories = () => {
                 setShowModal(true);
               }}
               className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
-              style={{ minWidth: '160px', height: '440px' }}
+              style={{ minWidth: "160px", height: "440px" }}
             >
-              <img 
-                src={item.image || 'https://via.placeholder.com/300x200?text=No+Image'} 
-                alt={item.name || item.pName} 
-                className="w-full h-44 object-cover" 
+              <img
+                src={
+                  item.image ||
+                  "https://via.placeholder.com/300x200?text=No+Image"
+                }
+                alt={item.name || item.pName}
+                className="w-full h-44 object-cover"
                 onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                  e.target.src =
+                    "https://via.placeholder.com/300x200?text=No+Image";
                 }}
               />
-              <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
-                <div>
-                  <h2 className="text-white text-lg font-semibold mb-1 font-serif">
-                    {item.pName || item.name || 'Unnamed Product'}
+              <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)] bg-gradient-to-b from-orange-500/70 to-orange-500/30 rounded-lg orange-gray-700 hover:border-orange-600 transition-all duration-300">
+                <div className="space-y-3">
+                  <h2 className="text-white text-lg font-semibold font-serif line-clamp-1">
+                    {item.productName || item.name || "Unnamed Product"}
                   </h2>
-                  <p className="text-white text-sm font-serif mb-2 line-clamp-2">
-                    {item.description || 'No description available'}
+
+                  <p className="text-white text-sm font-serif line-clamp-2">
+                    {item.description || "No description available"}
                   </p>
-                  <p className="text-white font-bold text-base font-serif">
-                    category: {item.category || 'Uncategorized'}
-                  </p>
+
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-white font-medium text-sm font-serif">
+                      <span className="text-white">Category:</span>{" "}
+                      {item.category || "Uncategorized"}
+                    </p>
+                    <p className="text-white font-medium text-sm font-serif">
+                      <span className="text-white">Features:</span>{" "}
+                      {item.features || "Uncategorized"}
+                    </p>
+                    
+
+                    <div className="flex items-center">
+                      <p className="text-white font-medium text-sm font-serif">
+                        <span className="text-white">Rating:</span>{" "}
+                        {item.rating || "N/A"}
+                      </p>
+                      {item.rating && (
+                        <span className="ml-1 text-yellow-400">⭐</span>
+                      )}
+                      
+                      <p className="text-white font-medium text-sm font-serif">
+                      <span className="text-white">Price:</span>{" "}
+                      {item.price || "Uncategorized"}
+                    </p>
+                    </div>
+                  </div>
                 </div>
 
                 <button
@@ -192,7 +236,7 @@ const Categories = () => {
                     e.stopPropagation();
                     handleAddToCart(item);
                   }}
-                  className="mt-4 w-full flex items-center justify-center gap-2 rounded-2xl h-10 text-white font-bold text-sm font-serif transition-transform hover:scale-110 bg-green-500"
+                  className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl h-10 text-white font-semibold text-sm font-serif transition-all hover:scale-[1.02] active:scale-95 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
                 >
                   <FiShoppingCart className="text-base" />
                   Add to Cart

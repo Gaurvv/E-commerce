@@ -3,10 +3,11 @@ import NavBar from "./Components/Navbar/NavBar.jsx";
 import Home from "./Components/Home";
 import Categories from "./Components/Categories";
 import Footer from "./Components/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 function App() {
   const navigate = useNavigate();
+  const mainData = useOutletContext();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,6 +18,7 @@ function App() {
       navigate("/auth", { replace: true });
     }
   }, [navigate]);
+
 
   return (
     <div>

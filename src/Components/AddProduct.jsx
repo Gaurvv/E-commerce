@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { FiShoppingCart, FiEdit, FiTrash2 } from "react-icons/fi";
+import OrangeButton from "./OrangeButton";
+import { useNavigate } from "react-router";
 
 const AddProduct = () => {
+
+  const userData = JSON.parse(localStorage.getItem("userDetail"));
+  if(!userData || userData.role !=="admin"){
+    console.log("i am admin");
+    window.location.href = "/"
+  }
+
+
   const [productDetail, setProductDetail] = useState({
     productName: "",
     price: "",
@@ -30,7 +40,7 @@ const AddProduct = () => {
       setFetchLoading(true);
       const res = await fetch("http://localhost:3000/product");
       const data = await res.json();
-      
+
       if (res.ok) {
         setExistingProducts(data.data || []);
       } else {
@@ -61,20 +71,24 @@ const AddProduct = () => {
     setSuccess(false);
 
     try {
-   
       const processedData = {
         ...productDetail,
-        productName: productDetail.productName.trim(), 
+        productName: productDetail.productName.trim(),
         price: productDetail.price ? Number(productDetail.price) : undefined,
         rating: productDetail.rating ? Number(productDetail.rating) : undefined,
-        popularity: productDetail.popularity ? Number(productDetail.popularity) : undefined,
-        features: productDetail.features 
-          ? productDetail.features.split(',').map(f => f.trim()).filter(f => f)
+        popularity: productDetail.popularity
+          ? Number(productDetail.popularity)
+          : undefined,
+        features: productDetail.features
+          ? productDetail.features
+              .split(",")
+              .map((f) => f.trim())
+              .filter((f) => f)
           : [],
       };
 
       // Remove empty fields
-      Object.keys(processedData).forEach(key => {
+      Object.keys(processedData).forEach((key) => {
         if (processedData[key] === "" || processedData[key] === undefined) {
           delete processedData[key];
         }
@@ -82,10 +96,10 @@ const AddProduct = () => {
 
       console.log("Submitting product data:", processedData); // Debug log
 
-      const url = editingProduct 
+      const url = editingProduct
         ? `http://localhost:3000/product/${editingProduct._id}`
         : "http://localhost:3000/product";
-      
+
       const method = editingProduct ? "PATCH" : "POST";
 
       const res = await fetch(url, {
@@ -101,8 +115,12 @@ const AddProduct = () => {
 
       if (res.status === 409) {
         // Show more detailed error message
-        const existingNames = existingProducts.map(p => p.productName);
-        setError(`Product name "${processedData.productName}" already exists! Existing products: ${existingNames.join(', ')}`);
+        const existingNames = existingProducts.map((p) => p.productName);
+        setError(
+          `Product name "${
+            processedData.productName
+          }" already exists! Existing products: ${existingNames.join(", ")}`
+        );
       } else if (res.ok) {
         setSuccess(true);
         setProductDetail({
@@ -116,10 +134,13 @@ const AddProduct = () => {
           category: "",
         });
         setEditingProduct(null);
-        fetchProducts(); // Refresh the product list
+        fetchProducts();
         setTimeout(() => setSuccess(false), 3000);
       } else {
-        setError(data.message || `Failed to ${editingProduct ? 'update' : 'add'} product`);
+        setError(
+          data.message ||
+            `Failed to ${editingProduct ? "update" : "add"} product`
+        );
       }
     } catch (err) {
       setError("Internal server error: " + err.message);
@@ -138,7 +159,9 @@ const AddProduct = () => {
       description: product.description || "",
       popularity: product.popularity?.toString() || "",
       image: product.image || "",
-      features: Array.isArray(product.features) ? product.features.join(', ') : "",
+      features: Array.isArray(product.features)
+        ? product.features.join(", ")
+        : "",
       category: product.category || "",
     });
     setError("");
@@ -185,8 +208,17 @@ const AddProduct = () => {
     setSuccess(false);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      <div className="pl-25">
+        <OrangeButton
+          title={"Go To Dashboard"}
+          onClick={() => navigate("/dashboard")}
+        />
+      </div>
+
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-orange-700 text-center mb-8">
           Product Management
@@ -198,10 +230,12 @@ const AddProduct = () => {
             <h2 className="text-2xl font-bold text-orange-700 mb-4">
               Existing Products ({existingProducts.length})
             </h2>
-            
+
             {fetchLoading ? (
               <div className="text-center py-8">
-                <div className="text-lg text-orange-600">Loading products...</div>
+                <div className="text-lg text-orange-600">
+                  Loading products...
+                </div>
               </div>
             ) : existingProducts.length === 0 ? (
               <div className="text-center py-8">
@@ -213,14 +247,18 @@ const AddProduct = () => {
                   <div
                     key={product._id}
                     className="bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.02]"
-                    style={{ height: '440px' }}
+                    style={{ height: "440px" }}
                   >
-                    <img 
-                      src={product.image || 'https://via.placeholder.com/300x200?text=No+Image'} 
-                      alt={product.productName} 
+                    <img
+                      src={
+                        product.image ||
+                        "https://via.placeholder.com/300x200?text=No+Image"
+                      }
+                      alt={product.productName}
                       className="w-full h-44 object-cover"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
+                        e.target.src =
+                          "https://via.placeholder.com/300x200?text=No+Image";
                       }}
                     />
                     <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)]">
@@ -229,13 +267,15 @@ const AddProduct = () => {
                           {product.productName}
                         </h3>
                         <p className="text-white text-sm font-serif mb-1 line-clamp-2">
-                          {product.description || 'No description'}
+                          {product.description || "No description"}
                         </p>
                         <div className="text-white text-sm font-serif space-y-1">
                           {product.price && <p>Price: ${product.price}</p>}
                           {product.rating && <p>Rating: {product.rating}⭐</p>}
-                          <p>Category: {product.category || 'Uncategorized'}</p>
-                          {product.popularity && <p>Popularity: {product.popularity}</p>}
+                          <p>Category: {product.category || "Uncategorized"}</p>
+                          {product.popularity && (
+                            <p>Popularity: {product.popularity}</p>
+                          )}
                         </div>
                       </div>
 
@@ -267,7 +307,7 @@ const AddProduct = () => {
             <div className="sticky top-4">
               <div className="bg-white p-6 rounded-lg shadow-lg border border-orange-200">
                 <h2 className="text-2xl font-bold mb-4 text-orange-700">
-                  {editingProduct ? 'Edit Product' : 'Add New Product'}
+                  {editingProduct ? "Edit Product" : "Add New Product"}
                 </h2>
 
                 {error && (
@@ -277,7 +317,9 @@ const AddProduct = () => {
                 )}
                 {success && (
                   <div className="mb-3 p-3 bg-green-100 border border-green-300 text-green-700 rounded">
-                    {editingProduct ? 'Product updated successfully!' : 'Product added successfully!'}
+                    {editingProduct
+                      ? "Product updated successfully!"
+                      : "Product added successfully!"}
                   </div>
                 )}
 
@@ -409,9 +451,13 @@ const AddProduct = () => {
                       disabled={loading}
                       className="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white py-2 rounded font-semibold transition"
                     >
-                      {loading ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+                      {loading
+                        ? "Saving..."
+                        : editingProduct
+                        ? "Update Product"
+                        : "Add Product"}
                     </button>
-                    
+
                     {editingProduct && (
                       <button
                         type="button"
