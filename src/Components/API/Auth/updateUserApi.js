@@ -4,7 +4,7 @@ const updateduserData = async (updatedData) => {
   try {
     
     const request = await SecureFetch(
-      "http://localhost:3000/user/user",  
+      mainEndPoint + "/user/user",  
       "PATCH",                                
       {
         "Content-Type": "application/json",
