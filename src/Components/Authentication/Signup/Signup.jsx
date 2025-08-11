@@ -5,7 +5,7 @@ import PasswordUser from "./Component/PasswordUser";
 import { useNavigate } from "react-router-dom";
 import signUpApi from "../../API/Auth/signUpApi";
 
-const Signup = ({ setScreen }) => {
+const Signup = ({ switchToLogin }) => {
   const [userDetail, setUserDetail] = useState({
     userName: "",
     contactNumber: "",
@@ -38,28 +38,58 @@ const Signup = ({ setScreen }) => {
     try {
       await signUpApi(finalUserDetail, navigate, setUserDetail, setStage, setErrorMessage);
     } catch (error) {
-      setErrorMessage("An error occurred during signup");
+      setErrorMessage("An error occurred during signup. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="p-3">
-      <div className="text-xl font-bold text-orange-500 text-center">SignUp</div>
+  const handleSwitchToLogin = () => {
+    if (switchToLogin && typeof switchToLogin === 'function') {
+      switchToLogin();
+    } else {
+      // Fallback navigation if switchToLogin is not provided
+      navigate('/login');
+    }
+  };
 
-      {errorMessage && (
-        <div className="text-red-500 text-center mb-3 p-2 bg-red-50 rounded">
-          {errorMessage}
+  // Global error display for API errors
+  const renderGlobalError = () => {
+    if (!errorMessage) return null;
+    
+    return (
+      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full mx-4">
+        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg shadow-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <span className="text-red-500 text-xl">⚠️</span>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-red-700">{errorMessage}</p>
+            </div>
+            <button 
+              onClick={() => setErrorMessage("")}
+              className="ml-auto text-red-500 hover:text-red-700"
+            >
+              ×
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+    );
+  };
 
+  return (
+    <>
+      {renderGlobalError()}
+      
       {stage === 1 && (
         <ContactUser
           userDetail={userDetail}
           setUserDetail={setUserDetail}
           setStage={setStage}
           setErrorMessage={setErrorMessage}
+          switchToLogin={handleSwitchToLogin}
         />
       )}
 
@@ -82,24 +112,7 @@ const Signup = ({ setScreen }) => {
           isLoading={isLoading}
         />
       )}
-
-      {/* Progress indicator */}
-      <div className="flex justify-center mt-4 space-x-2">
-        <div className={`w-3 h-3 rounded-full ${stage >= 1 ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
-        <div className={`w-3 h-3 rounded-full ${stage >= 2 ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
-        <div className={`w-3 h-3 rounded-full ${stage >= 3 ? 'bg-orange-500' : 'bg-gray-300'}`}></div>
-      </div>
-
-      <div className="mt-4 text-center">
-        Already have an account?{" "}
-        <span
-          className="text-blue-500 cursor-pointer hover:underline"
-          onClick={() => setScreen(false)}
-        >
-          login
-        </span>
-      </div>
-    </div>
+    </>
   );
 };
 

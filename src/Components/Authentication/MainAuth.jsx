@@ -3,16 +3,23 @@ import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
 
 const MainAuth = () => {
-  const [screen, setScreen] = useState(true);
+  const [screen, setScreen] = useState(false); // false = Login, true = Signup
+
+  const switchToSignup = () => {
+    setScreen(true);
+  };
+
+  const switchToLogin = () => {
+    setScreen(false);
+  };
+
   return (
-    <div className="bg-pink-100 flex h-[100vh] justify-center items-center">
-      <div className="w-80 border border-slate-400 rounded-xl shadow-lg shadow-black/50 bg-white ">
-        {screen ? (
-          <Signup setScreen={setScreen} />
-        ) : (
-          <Login setScreen={setScreen} />
-        )}
-      </div>
+    <div className="min-h-screen">
+      {screen ? (
+        <Signup switchToLogin={switchToLogin} />
+      ) : (
+        <Login switchToSignup={switchToSignup} />
+      )}
     </div>
   );
 };

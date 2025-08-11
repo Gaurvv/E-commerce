@@ -68,6 +68,9 @@ const Categories = () => {
     }
   };
 
+  // Define standard meal categories
+  const standardCategories = ["All", "Breakfast", "Lunch", "Dinner", "Snack", "Dessert"];
+  
   const mealTypeSet = new Set();
 
   productData.forEach((item) => {
@@ -78,7 +81,12 @@ const Categories = () => {
     }
   });
 
-  const dynamicCategories = ["All", ...Array.from(mealTypeSet)];
+  // Combine standard categories with any additional ones from the data
+  const additionalCategories = Array.from(mealTypeSet).filter(
+    (category) => !standardCategories.includes(category)
+  );
+  
+  const dynamicCategories = [...standardCategories, ...additionalCategories];
 
   const categoryImages = {
     All: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80",
@@ -97,11 +105,20 @@ const Categories = () => {
   const filteredProducts =
     selectedCategory === "All"
       ? productData
-      : productData.filter((item) =>
-          Array.isArray(item.mealType)
-            ? item.mealType.includes(selectedCategory)
-            : item.mealType === selectedCategory
-        );
+      : productData.filter((item) => {
+          // Handle both array and string mealType formats
+          if (Array.isArray(item.mealType)) {
+            return item.mealType.some(type => 
+              type.toLowerCase() === selectedCategory.toLowerCase()
+            );
+          } else if (item.mealType) {
+            return item.mealType.toLowerCase() === selectedCategory.toLowerCase();
+          } else if (item.category) {
+            // Fallback to category field if mealType is not available
+            return item.category.toLowerCase() === selectedCategory.toLowerCase();
+          }
+          return false;
+        });
 
   // Loading state
   if (loading) {
@@ -123,7 +140,7 @@ const Categories = () => {
 
   return (
     <>
-      <div className="uppercase bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-10 shadow-md">
+      <div className="uppercase max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-gray-900 text-2xl sm:text-3xl font-serif font-bold mt-10 shadow-md">
         Categories
       </div>
 
@@ -159,7 +176,7 @@ const Categories = () => {
         ))}
       </div>
 
-      <div className="bg-gradient-to-r from-orange-600 to-orange-400 max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-white text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
+      <div className="uppercase max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-gray-900 text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
         Explore Our Menu
       </div>
 
@@ -178,67 +195,71 @@ const Categories = () => {
                 setSelectedProduct(item);
                 setShowModal(true);
               }}
-              className="w-full sm:w-[45%] md:w-[30%] lg:w-[22%] xl:w-[18%] bg-gradient-to-b from-orange-600 to-orange-400 rounded-2xl shadow-2xl overflow-hidden transition hover:scale-[1.01] cursor-pointer"
-              style={{ minWidth: "160px", height: "440px" }}
+              className="w-full sm:w-[280px] md:w-[300px] lg:w-[280px] xl:w-[300px] bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
+              style={{ height: "420px" }}
             >
-              <img
-                src={
-                  item.image ||
-                  "https://via.placeholder.com/300x200?text=No+Image"
-                }
-                alt={item.name || item.pName}
-                className="w-full h-44 object-cover"
-                onError={(e) => {
-                  e.target.src =
-                    "https://via.placeholder.com/300x200?text=No+Image";
-                }}
-              />
-              <div className="p-4 flex flex-col justify-between h-[calc(100%-176px)] bg-gradient-to-b from-orange-500/70 to-orange-500/30 rounded-lg orange-gray-700 hover:border-orange-600 transition-all duration-300">
+              {/* Product Image */}
+              <div className="relative w-full h-52 overflow-hidden">
+                <img
+                  src={
+                    item.image ||
+                    "https://via.placeholder.com/300x200?text=No+Image"
+                  }
+                  alt={item.name || item.pName}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/300x200?text=No+Image";
+                  }}
+                />
+              </div>
+
+              {/* Product Info */}
+              <div className="p-4 flex flex-col justify-between h-[calc(100%-208px)] bg-gray-50">
                 <div className="space-y-3">
-                  <h2 className="text-white text-lg font-semibold font-serif line-clamp-1">
+                  {/* Product Name */}
+                  <h2 className="text-gray-800 text-lg font-bold font-serif line-clamp-1">
                     {item.productName || item.name || "Unnamed Product"}
                   </h2>
 
-                  <p className="text-white text-sm font-serif line-clamp-2">
-                    {item.description || "No description available"}
-                  </p>
+                  {/* Category */}
+                  <div className="flex items-center">
+                    <span className="inline-block px-3 py-1 text-xs font-medium text-orange-700 bg-orange-100 rounded-full">
+                      {Array.isArray(item.mealType) 
+                        ? item.mealType.join(", ") 
+                        : item.mealType || item.category || "Uncategorized"}
+                    </span>
+                    {/* Show additional category info if available */}
+                    {item.features && (
+                      <span className="ml-2 inline-block px-2 py-1 text-xs font-medium text-gray-600 bg-gray-200 rounded-full">
+                        {item.features}
+                      </span>
+                    )}
+                  </div>
 
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-white font-medium text-sm font-serif">
-                      <span className="text-white">Category:</span>{" "}
-                      {item.category || "Uncategorized"}
-                    </p>
-                    <p className="text-white font-medium text-sm font-serif">
-                      <span className="text-white">Features:</span>{" "}
-                      {item.features || "Uncategorized"}
-                    </p>
-                    
-
-                    <div className="flex items-center">
-                      <p className="text-white font-medium text-sm font-serif">
-                        <span className="text-white">Rating:</span>{" "}
-                        {item.rating || "N/A"}
-                      </p>
-                      {item.rating && (
-                        <span className="ml-1 text-yellow-400">⭐</span>
-                      )}
-                      
-                      <p className="text-white font-medium text-sm font-serif">
-                      <span className="text-white">Price:</span>{" "}
-                      {item.price || "Uncategorized"}
-                    </p>
-                    </div>
+                  {/* Price */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-gray-900">
+                      ${item.price || "N/A"}
+                    </span>
+                    {item.rating && (
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="text-yellow-400 mr-1">⭐</span>
+                        <span>{item.rating}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
+                {/* Add to Cart Button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAddToCart(item);
                   }}
-                  className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl h-10 text-white font-semibold text-sm font-serif transition-all hover:scale-[1.02] active:scale-95 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+                  className="mt-4 w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50"
                 >
-                  <FiShoppingCart className="text-base" />
+                  <FiShoppingCart className="text-lg" />
                   Add to Cart
                 </button>
               </div>

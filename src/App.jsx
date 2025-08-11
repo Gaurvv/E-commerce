@@ -19,9 +19,9 @@ function App() {
     }
   }, [navigate]);
 
-
+  // Added a background color class to the main container.
   return (
-    <div>
+    <div className="bg-gray-100 min-h-screen">
       <NavBar />
       <Home />
       <Categories />

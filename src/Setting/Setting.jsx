@@ -7,7 +7,7 @@ import DeleteAccount from "./Components/DeleteAccount";
 
 const Setting = () => {
   return (
-    <div className="p-2 flex flex-col h-[100vh]">
+    <div className=" flex flex-col h-[100vh]">
       <NavBar />
       <div className=" flex flex-col my-4 gap-4">
         <General />

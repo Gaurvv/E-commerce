@@ -1,2 +1,2 @@
-const mainEndPoint = "https://ecom-backend-qp6a.onrender.com";
+const mainEndPoint = "https://ecom-backend-dtm6.onrender.com/";
 export default mainEndPoint;

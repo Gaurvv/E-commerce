@@ -3,6 +3,7 @@ import SecureFetch from "./Components/API/Auth/ApiConfiguration";
 import { useState } from "react";
 import { Outlet } from "react-router";
 import mainEndPoint from "./Components/API/Auth/mainEndPoint";
+import MainAuth from "./Components/Authentication/MainAuth";
 
 const Hoome = () => {
   const [mainData, setMainData] = useState([]);
