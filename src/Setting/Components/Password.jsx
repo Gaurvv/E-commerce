@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import InputDetails from "../../Components/Modal/InputDetails";
 import OrangeButton from "../../Components/OrangeButton";
-import changeuserPassword from "../../Components/API/Auth/changePasswordApi";
+import changeUserPassword from "../../Components/API/Auth/changePasswordApi";
 
 const Password = () => {
   const prevPasswordRef = useRef();
@@ -14,7 +14,6 @@ const Password = () => {
 
     setError("");
 
-    // Validation
     if (!oldPass || !newPass) {
       setError("Both fields are required");
       return;
@@ -25,12 +24,13 @@ const Password = () => {
       return;
     }
 
+    // Pass keys EXACTLY as backend expects
     const updatedData = {
-      prevpassword: oldPass,
-      currentpassword: newPass,
+      currentPassword: oldPass,
+      newPassword: newPass,
     };
 
-    changeuserPassword(updatedData, setError);
+    changeUserPassword(updatedData, setError);
   };
 
   return (
@@ -40,14 +40,14 @@ const Password = () => {
 
         <div>
           <InputDetails
-            errormessage="Please provide password"
+            errormessage="Please provide old password"
             label="Old Password"
             placeholder="Enter your Old Password"
             ref={prevPasswordRef}
             type="password"
           />
           <InputDetails
-            errormessage="Please provide a valid password"
+            errormessage="Please provide a valid new password"
             label="New Password"
             placeholder="Enter your New Password"
             ref={currentPasswordRef}

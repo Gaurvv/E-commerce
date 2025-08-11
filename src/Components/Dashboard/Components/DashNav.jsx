@@ -1,6 +1,7 @@
 import React from "react";
 import { RiDashboardFill } from "react-icons/ri";
 import { useNavigate } from "react-router";
+import { FaHome } from "react-icons/fa";
 
 const DashNav = ({ activeScreen, setActiveScreen }) => {
   const navigate = useNavigate();
@@ -33,6 +34,15 @@ const DashNav = ({ activeScreen, setActiveScreen }) => {
       >
         <RiDashboardFill />
         <span>Add Product</span>
+      </div>
+      <div
+        className={`flex items-center gap-3 p-2 bg-orange-400 text-white rounded-md border border-orange-400 hover:border-orange-50 hover:shadow-sm font-medium hover:shadow-white ${
+          activeScreen == 3 && "bg-orange-500 shadow-md shadow-orange-100/50"
+        }`}
+        onClick={() => navigate("/")}
+      >
+        <FaHome />
+        <span>Home </span>
       </div>
     </div>
   );

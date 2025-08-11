@@ -48,7 +48,7 @@ function CartCard({ item, setItem }) {
       </div>
 
       <div className="flex-grow text-center md:text-left text-gray-800 space-y-1 md:space-y-2 mb-4 md:mb-0">
-        <p className="text-2xl font-bold text-gray-800">{item.pName}</p>
+        <p className="text-2xl font-bold text-gray-800">{item.productName}</p>
         <p className="text-md text-gray-600">
           Category:{" "}
           <span className="font-semibold">

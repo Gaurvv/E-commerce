@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FiShoppingCart, FiEdit, FiTrash2 } from "react-icons/fi";
 import OrangeButton from "./OrangeButton";
 import { useNavigate } from "react-router";
+import mainEndPoint from "./API/Auth/mainEndPoint";
 
 const AddProduct = () => {
 
@@ -38,7 +39,7 @@ const AddProduct = () => {
   const fetchProducts = async () => {
     try {
       setFetchLoading(true);
-      const res = await fetch("http://localhost:3000/product");
+      const res = await fetch( mainEndPoint +"product");
       const data = await res.json();
 
       if (res.ok) {
@@ -97,8 +98,8 @@ const AddProduct = () => {
       console.log("Submitting product data:", processedData); // Debug log
 
       const url = editingProduct
-        ? `http://localhost:3000/product/${editingProduct._id}`
-        : "http://localhost:3000/product";
+        ? mainEndPoint + `product/${editingProduct._id}`
+        : mainEndPoint + "product";
 
       const method = editingProduct ? "PATCH" : "POST";
 
@@ -174,7 +175,7 @@ const AddProduct = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/product/${productId}`, {
+      const res = await fetch( mainEndPoint `product/${productId}`, {
         method: "DELETE",
       });
 
@@ -212,10 +213,14 @@ const AddProduct = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="pl-25">
+      <div className="pl-25 flex gap-10">
         <OrangeButton
           title={"Go To Dashboard"}
           onClick={() => navigate("/dashboard")}
+        />
+        <OrangeButton
+          title={"Go To Home"}
+          onClick={() => navigate("/")}
         />
       </div>
 

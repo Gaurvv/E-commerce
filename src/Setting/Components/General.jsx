@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import InputDetails from "../../Components/Modal/InputDetails";
 import OrangeButton from "../../Components/OrangeButton";
 import updateduserData from "../../Components/API/Auth/updateUserApi";
@@ -9,6 +9,7 @@ const General = () => {
   const nameRef = useRef();
   const emailRef = useRef();
   const contactRef = useRef();
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (nameRef.current) nameRef.current.value = data.userName || "";
@@ -24,12 +25,20 @@ const General = () => {
     };
 
     if (!updatedData.userName || !updatedData.email || !updatedData.contactNumber) {
-      alert("All fields are required!");
+      setError("All fields are required!");
       return;
     }
+    setError("");
 
-    console.log("Sending updated data:", updatedData);
-    await updateduserData(updatedData);
+    try {
+      await updateduserData(updatedData);
+      alert("User updated successfully!");
+      // Optionally update localStorage here if your API doesn't return updated user object
+      const updatedUserDetail = { ...data, ...updatedData };
+      localStorage.setItem("userDetail", JSON.stringify(updatedUserDetail));
+    } catch (err) {
+      setError("Failed to update user data.");
+    }
   };
 
   return (
@@ -38,27 +47,28 @@ const General = () => {
         <div className="text-gray-700 font-bold text-xl italic">General Information</div>
         <div>
           <InputDetails
-            err={nameRef.current?.value === ""}
+            err={error && !nameRef.current?.value}
             errormessage={"Please provide a valid name"}
             label={"Name"}
             placeholder={"Enter your Name"}
             ref={nameRef}
           />
           <InputDetails
-            err={emailRef.current?.value === ""}
+            err={error && !emailRef.current?.value}
             errormessage={"Please provide a valid email"}
             label={"Email"}
             placeholder={"Enter your Email"}
             ref={emailRef}
           />
           <InputDetails
-            err={contactRef.current?.value === ""}
+            err={error && !contactRef.current?.value}
             errormessage={"Please provide a valid phone number"}
             label={"Contact Number"}
             placeholder={"Enter your Contact Number"}
             ref={contactRef}
           />
         </div>
+        {error && <p className="text-red-600 font-semibold mt-1">{error}</p>}
         <div>
           <OrangeButton title={"Update"} onClick={handleUpdate} />
         </div>
