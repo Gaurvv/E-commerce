@@ -19,7 +19,7 @@ const Categories = () => {
         setLoading(true);
         setError(null);
 
-        const res = await fetch("http://localhost:3000/product");
+        const res = await fetch("https://ecom-backend-dtm6.onrender.com/product");
         const data = await res.json();
 
         console.log("API Response:", data); // Debug log
