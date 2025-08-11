@@ -1,4 +1,4 @@
-import SecureFetch from "../Auth/apiConfiguration";
+import SecureFetch from "./ApiConfiguration";
 
 const updateduserData = async (updatedData) => {
   try {
