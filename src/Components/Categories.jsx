@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { FiShoppingCart } from "react-icons/fi";
 import Chef from "./Chef";
 import ProductModal from "./Modal/ProductModal";
@@ -13,6 +14,10 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const exploreMenuRef = useRef(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,23 +27,17 @@ const Categories = () => {
         const res = await fetch("https://ecom-backend-dtm6.onrender.com/product");
         const data = await res.json();
 
-        console.log("API Response:", data); // Debug log
-
         if (res.status === 200) {
-          // Add id field for compatibility (MongoDB uses _id)
           const productsWithId = data.data.map((product) => ({
             ...product,
             id: product._id || product.id,
           }));
 
           setProductData(productsWithId);
-          console.log("Products set:", productsWithId); // Debug log
         } else {
-          console.error("Failed to fetch products:", data.message);
           setError("Failed to fetch products");
         }
       } catch (err) {
-        console.error("Error fetching products:", err);
         setError("Error fetching products");
       } finally {
         setLoading(false);
@@ -48,29 +47,35 @@ const Categories = () => {
     fetchData();
   }, []);
 
+  // Read search param from URL & scroll on change
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const search = params.get("search") || "";
+    setSearchTerm(search);
+
+    if (search && exploreMenuRef.current) {
+      exploreMenuRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [location.search]);
+
   const handleAddToCart = (item) => {
-    const exists = cartItems.find((product) => product.id === item._id);
+    const exists = cartItems.find((product) => product.id === item.id);
     if (exists) {
       setCartItems((prevCartItems) =>
         prevCartItems.map((product) =>
-          product.id === item._id
+          product.id === item.id
             ? { ...product, quantity: product.quantity + 1 }
             : product
         )
       );
       addToCart({ ...item, quantity: exists.quantity + 1 });
     } else {
-      setCartItems((prevCartItems) => [
-        ...prevCartItems,
-        { ...item, quantity: 1 },
-      ]);
+      setCartItems((prevCartItems) => [...prevCartItems, { ...item, quantity: 1 }]);
       addToCart({ ...item, quantity: 1 });
     }
   };
 
-  // Define standard meal categories
   const standardCategories = ["All", "Breakfast", "Lunch", "Dinner", "Snack", "Dessert"];
-  
   const mealTypeSet = new Set();
 
   productData.forEach((item) => {
@@ -81,11 +86,10 @@ const Categories = () => {
     }
   });
 
-  // Combine standard categories with any additional ones from the data
   const additionalCategories = Array.from(mealTypeSet).filter(
     (category) => !standardCategories.includes(category)
   );
-  
+
   const dynamicCategories = [...standardCategories, ...additionalCategories];
 
   const categoryImages = {
@@ -102,25 +106,44 @@ const Categories = () => {
       "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=500&q=80",
   };
 
-  const filteredProducts =
+  // Filter by category first
+  const filteredProductsByCategory =
     selectedCategory === "All"
       ? productData
       : productData.filter((item) => {
-          // Handle both array and string mealType formats
           if (Array.isArray(item.mealType)) {
-            return item.mealType.some(type => 
-              type.toLowerCase() === selectedCategory.toLowerCase()
+            return item.mealType.some(
+              (type) => type.toLowerCase() === selectedCategory.toLowerCase()
             );
           } else if (item.mealType) {
             return item.mealType.toLowerCase() === selectedCategory.toLowerCase();
           } else if (item.category) {
-            // Fallback to category field if mealType is not available
             return item.category.toLowerCase() === selectedCategory.toLowerCase();
           }
           return false;
         });
 
-  // Loading state
+  // Then filter by search term
+  const filteredProducts = filteredProductsByCategory.filter((item) => {
+  if (!searchTerm) return true;
+  const searchLower = searchTerm.toLowerCase();
+
+  const nameMatch =
+    (item.productName && item.productName.toLowerCase().includes(searchLower)) ||
+    (item.name && item.name.toLowerCase().includes(searchLower));
+
+  const categoryMatch =
+    (item.category && item.category.toLowerCase().includes(searchLower)) ||
+    (Array.isArray(item.mealType) && item.mealType.some((mt) => mt.toLowerCase().includes(searchLower))) ||
+    (typeof item.mealType === "string" && item.mealType.toLowerCase().includes(searchLower));
+
+  const featuresMatch =
+    typeof item.features === "string" &&
+    item.features.toLowerCase().includes(searchLower);
+
+  return nameMatch || categoryMatch || featuresMatch;
+});
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -129,7 +152,6 @@ const Categories = () => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -146,9 +168,7 @@ const Categories = () => {
 
       <div className="text-center mt-4 text-orange-600 font-bold text-lg">
         🛒 Cart: {cartItems.reduce((acc, item) => acc + item.quantity, 0)} item
-        {cartItems.reduce((acc, item) => acc + item.quantity, 0) !== 1
-          ? "s"
-          : ""}
+        {cartItems.reduce((acc, item) => acc + item.quantity, 0) !== 1 ? "s" : ""}
       </div>
 
       <div className="mt-10 flex flex-wrap justify-center items-center gap-6 px-4">
@@ -160,9 +180,7 @@ const Categories = () => {
           >
             <div
               className={`rounded-full w-28 h-28 bg-orange-200 flex items-center justify-center shadow-lg border-4 transition-all duration-300 overflow-hidden ${
-                selectedCategory === cat
-                  ? "border-green-500 scale-105"
-                  : "border-transparent"
+                selectedCategory === cat ? "border-green-500 scale-105" : "border-transparent"
               }`}
             >
               <img
@@ -176,7 +194,11 @@ const Categories = () => {
         ))}
       </div>
 
-      <div className="uppercase max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-gray-900 text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md">
+      <div
+        id="explore-menu-section"
+        ref={exploreMenuRef}
+        className="uppercase max-w-lg mx-auto h-14 flex items-center justify-center rounded-2xl text-gray-900 text-2xl sm:text-3xl font-serif font-bold mt-16 shadow-md"
+      >
         Explore Our Menu
       </div>
 
@@ -185,7 +207,7 @@ const Categories = () => {
           <p className="text-center text-lg text-gray-500">
             {productData.length === 0
               ? "No products available"
-              : "No products found in this category"}
+              : "No products found for your search"}
           </p>
         ) : (
           filteredProducts.map((item) => (
@@ -198,38 +220,29 @@ const Categories = () => {
               className="w-full sm:w-[280px] md:w-[300px] lg:w-[280px] xl:w-[300px] bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
               style={{ height: "420px" }}
             >
-              {/* Product Image */}
               <div className="relative w-full h-52 overflow-hidden">
                 <img
-                  src={
-                    item.image ||
-                    "https://via.placeholder.com/300x200?text=No+Image"
-                  }
+                  src={item.image || "https://via.placeholder.com/300x200?text=No+Image"}
                   alt={item.name || item.pName}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/300x200?text=No+Image";
+                    e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
                   }}
                 />
               </div>
 
-              {/* Product Info */}
               <div className="p-4 flex flex-col justify-between h-[calc(100%-208px)] bg-gray-50">
                 <div className="space-y-3">
-                  {/* Product Name */}
                   <h2 className="text-gray-800 text-lg font-bold font-serif line-clamp-1">
                     {item.productName || item.name || "Unnamed Product"}
                   </h2>
 
-                  {/* Category */}
                   <div className="flex items-center">
                     <span className="inline-block px-3 py-1 text-xs font-medium text-orange-700 bg-orange-100 rounded-full">
-                      {Array.isArray(item.mealType) 
-                        ? item.mealType.join(", ") 
+                      {Array.isArray(item.mealType)
+                        ? item.mealType.join(", ")
                         : item.mealType || item.category || "Uncategorized"}
                     </span>
-                    {/* Show additional category info if available */}
                     {item.features && (
                       <span className="ml-2 inline-block px-2 py-1 text-xs font-medium text-gray-600 bg-gray-200 rounded-full">
                         {item.features}
@@ -237,11 +250,8 @@ const Categories = () => {
                     )}
                   </div>
 
-                  {/* Price */}
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-gray-900">
-                      ${item.price || "N/A"}
-                    </span>
+                    <span className="text-2xl font-bold text-gray-900">${item.price || "N/A"}</span>
                     {item.rating && (
                       <div className="flex items-center text-sm text-gray-600">
                         <span className="text-yellow-400 mr-1">⭐</span>
@@ -251,7 +261,6 @@ const Categories = () => {
                   </div>
                 </div>
 
-                {/* Add to Cart Button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
